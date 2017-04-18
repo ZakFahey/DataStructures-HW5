@@ -7,6 +7,8 @@ using namespace std;
 #include <functional>
 #include <chrono>
 #include <string>
+#include <iostream>
+#include <algorithm>
 typedef chrono::high_resolution_clock Clock;
 
 int * randomArray(int size)
@@ -19,20 +21,50 @@ int * randomArray(int size)
 	return arr;
 }
 
+string printArray(int *arr, int size)
+{
+	string ret = "[ ";
+
+	for (int i = 0; i < size; i++)
+	{
+		if (i != 0)
+		{
+			ret += ", ";
+		}
+		ret += to_string(arr[i]);
+	}
+
+	ret += " ]";
+
+	return ret;
+}
+
 void testSortingMethod(string name, function<int* (int[], int)> sortingFunction, const int** arrays)
 {
 	int arraySizes[5] = { 10, 100, 500, 5000, 25000 };
 
+	cout << name << ":" << endl;
+
 	for (int i = 0; i < 5; i++)
 	{
 		auto start = Clock::now();
+		int *result;
 
-		//Duplicate array
-		
+		for (int j = 0; j < 10; j++)
+		{
+			int *clonedArray;
+			copy(arrays[i], arrays[i] + arraySizes[i], clonedArray);
+			//TODO: will the array returned by this function be an altered clonedArray pointer or will it be a new array? The former may cause issues.
+			result = sortingFunction(clonedArray, arraySizes[i]);
+			delete clonedArray;
+		}
 
 		auto end = Clock::now();
 		int time = chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+		cout << "Array size: " << arraySizes[i] << ", Sorted result: " << printArray(result, arraySizes[i]) << ", Time: " << time << "ns" << endl;
+		delete result;
 	}
+	cout << endl;
 }
 
 //Sorting methods
