@@ -9,27 +9,34 @@ using namespace std;
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 typedef chrono::high_resolution_clock Clock;
 
-int * randomArray(int size)
+vector<int> randomArray(int size)
 {
-	int *arr = new int[size];
+	vector<int> arr;
+	arr.reserve(size);
 	for (int i = 0; i < size; i++)
 	{
-		arr[i] = rand() % (2 * size);
+		arr.push_back(rand() % (2 * size));
 	}
 	return arr;
 }
 
-string printArray(int *arr, int size)
+string printArray(vector<int> arr)
 {
 	string ret = "[ ";
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < arr.size(); i++)
 	{
 		if (i != 0)
 		{
 			ret += ", ";
+		}
+		if (i > 50)
+		{
+			ret += "...";
+			break;
 		}
 		ret += to_string(arr[i]);
 	}
@@ -39,7 +46,7 @@ string printArray(int *arr, int size)
 	return ret;
 }
 
-void testSortingMethod(string name, function<int* (int[], int)> sortingFunction, const int** arrays)
+void testSortingMethod(string name, function<vector<int> (vector<int>)> sortingFunction, vector<int> arrays[5])
 {
 	int arraySizes[5] = { 10, 100, 500, 5000, 25000 };
 
@@ -47,61 +54,71 @@ void testSortingMethod(string name, function<int* (int[], int)> sortingFunction,
 
 	for (int i = 0; i < 5; i++)
 	{
+		vector<int> result;
 		auto start = Clock::now();
-		int *result;
-
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < 1; j++)
 		{
-			int *clonedArray;
-			copy(arrays[i], arrays[i] + arraySizes[i], clonedArray);
-			//TODO: will the array returned by this function be an altered clonedArray pointer or will it be a new array? The former may cause issues.
-			result = sortingFunction(clonedArray, arraySizes[i]);
-			delete clonedArray;
+			result = sortingFunction(arrays[i]);
 		}
-
 		auto end = Clock::now();
 		int time = chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-		cout << "Array size: " << arraySizes[i] << ", Sorted result: " << printArray(result, arraySizes[i]) << ", Time: " << time << "ns" << endl;
-		delete result;
+
+		cout << "Array size: " << arraySizes[i] << ", Sorted result: " << printArray(result) << ", Time: " << time << "ns" << endl;
 	}
 	cout << endl;
 }
 
 //Sorting methods
-int * bubbleSort(int input[], int size)
+vector<int> bubbleSort(vector<int> input)
 {
-
+	bool swapped = true;
+	while (swapped)
+	{
+		swapped = false;
+		for (int i = 0; i < input.size() - 1; i++)
+		{
+			//Swap the values if they're not in the right order
+			if (input[i] > input[i + 1])
+			{
+				int temp = input[i];
+				input[i] = input[i + 1];
+				input[i + 1] = temp;
+				swapped = true;
+			}
+		}
+	}
+	return input;
 }
-int * insertionSort(int input[], int size)
+vector<int> insertionSort(vector<int> input)
 {
-
+	return input;
 }
-int * mergeSort(int input[], int size)
+vector<int> mergeSort(vector<int> input)
 {
-
+	return input;
 }
-int * quickSort(int input[], int size)
+vector<int> quickSort(vector<int> input)
 {
-
+	return input;
 }
-int * heapSort(int input[], int size)
+vector<int> heapSort(vector<int> input)
 {
-
+	return input;
 }
-int * countingSort(int input[], int size)
+vector<int> countingSort(vector<int> input)
 {
-
+	return input;
 }
-int * radixSort(int input[], int size)
+vector<int> radixSort(vector<int> input)
 {
-
+	return input;
 }
 //
 
 int main()
 {
 	srand(NULL);
-	int *arrays[5];
+	vector<int> arrays[5];
 	arrays[0] = randomArray(10);
 	arrays[1] = randomArray(100);
 	arrays[2] = randomArray(500);
@@ -109,12 +126,14 @@ int main()
 	arrays[4] = randomArray(25000);
 
 	testSortingMethod("Bubble sort", bubbleSort, arrays);
-	testSortingMethod("Insertion sort", insertionSort, arrays);
-	testSortingMethod("Merge sort", mergeSort, arrays);
-	testSortingMethod("Quicksort", quickSort, arrays);
-	testSortingMethod("Heapsort", heapSort, arrays);
-	testSortingMethod("Counting sort", countingSort, arrays);
-	testSortingMethod("Radix sort", radixSort, arrays);
+	//testSortingMethod("Insertion sort", insertionSort, arrays);
+	//testSortingMethod("Merge sort", mergeSort, arrays);
+	//testSortingMethod("Quicksort", quickSort, arrays);
+	//testSortingMethod("Heapsort", heapSort, arrays);
+	//testSortingMethod("Counting sort", countingSort, arrays);
+	//testSortingMethod("Radix sort", radixSort, arrays);
 
+	int a;
+	cin >> a;
 	return 0;
 }
