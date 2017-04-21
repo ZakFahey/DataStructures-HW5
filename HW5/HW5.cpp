@@ -23,27 +23,36 @@ vector<int> randomArray(int size)
 	return arr;
 }
 
-string printArray(vector<int> arr)
+bool isSorted(vector<int> arr)
 {
-	string ret = "[ ";
-
-	for (int i = 0; i < arr.size(); i++)
+	for (int i = 0; i < arr.size() - 1; i++)
 	{
-		if (i != 0)
-		{
-			ret += ", ";
-		}
-		if (i > 50)
-		{
-			ret += "...";
-			break;
-		}
-		ret += to_string(arr[i]);
+		if (arr[i] > arr[i + 1]) return false;
 	}
+	return true;
+}
 
-	ret += " ]";
+bool hasSameItems(vector<int> original, vector<int> sorted)
+{
+	int *rates = new int[original.size() * 2];
 
-	return ret;
+	//Initialize the array
+	for (int i = 0; i < original.size() * 2; i++)
+	{
+		rates[i] = 0;
+	}
+	//Add up the difference in frequencies between the two lists
+	for (int i = 0; i < original.size(); i++)
+	{
+		rates[original[i]]++;
+		rates[sorted[i]]--;
+	}
+	//Verify that the number of each number is the same with each list
+	for (int i = 0; i < original.size() * 2; i++)
+	{
+		if (rates[i] != 0) return false;
+	}
+	return true;
 }
 
 void testSortingMethod(string name, function<vector<int> (vector<int>)> sortingFunction, vector<int> arrays[5])
@@ -56,14 +65,15 @@ void testSortingMethod(string name, function<vector<int> (vector<int>)> sortingF
 	{
 		vector<int> result;
 		auto start = Clock::now();
-		for (int j = 0; j < 1; j++)
+		//Running fewer iterations for the last few arrays
+		for (int j = 0; j < (i > 3 ? 1 : 10); j++)
 		{
 			result = sortingFunction(arrays[i]);
 		}
 		auto end = Clock::now();
-		int time = chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+		int time = chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() * (i > 3 ? 10 : 1);
 
-		cout << "Array size: " << arraySizes[i] << ", Sorted result: " << printArray(result) << ", Time: " << time << "ns" << endl;
+		cout << "Array size: " << arraySizes[i] << ", Is sorted: " << isSorted(result) << ", Has same items: " << hasSameItems(arrays[i], result) << ", Time: " << time << "ns" << endl;
 	}
 	cout << endl;
 }
@@ -91,10 +101,76 @@ vector<int> bubbleSort(vector<int> input)
 }
 vector<int> insertionSort(vector<int> input)
 {
+	for (int i = 1; i < input.size(); i++)
+	{
+		int j = i;
+		//Find right spot
+		while (j > 0 && input[i] < input[j - 1])
+		{
+			j--;
+		}
+		int temp = input[i];
+		//Push other items forward
+		for (int k = j; k < i; k++)
+		{
+			input[k + 1] = input[k];
+		}
+		//Put item in right spot
+		input[j] = temp;
+	}
 	return input;
 }
 vector<int> mergeSort(vector<int> input)
 {
+	if(input.size() == 1) return input;
+
+	if (input.size() == 2)
+	{
+		if (input[1] < input[0])
+		{
+			int temp = input[1];
+			input[1] = input[0];
+			input[0] = temp;
+		}
+		return input;
+	}
+
+	vector<int> newVec1, newVec2;
+	//Split vector into 2
+	for (int i = 0; i < input.size(); i++)
+	{
+		if (i < input.size() / 2)
+		{
+			newVec1.push_back(input[i]);
+		}
+		else
+		{
+			newVec2.push_back(input[i]);
+		}
+	}
+
+	//Sort the 2 subvectors
+	newVec1 = mergeSort(newVec1);
+	newVec2 = mergeSort(newVec2);
+
+	//Merge the two subvectors together
+	int index1 = 0, index2 = 0, resultIndex = 0;
+	while (resultIndex < input.size())
+	{
+		//Insert either the smaller item or the one that isn't empty
+		if (index2 >= newVec2.size() || (index1 < newVec1.size() && newVec1[index1] < newVec2[index2]))
+		{
+			input[resultIndex] = newVec1[index1];
+			index1++;
+		}
+		else
+		{
+			input[resultIndex] = newVec2[index2];
+			index2++;
+		}
+		resultIndex++;
+	}
+
 	return input;
 }
 vector<int> quickSort(vector<int> input)
@@ -105,19 +181,58 @@ vector<int> heapSort(vector<int> input)
 {
 	return input;
 }
+vector<int> countingSortInner(vector<int> input, int range, function<int(int)> comparison)
+{
+	int *rates = new int[range];
+
+	//Initialize the array
+	for (int i = 0; i < range; i++)
+	{
+		rates[i] = 0;
+	}
+	//Add up the frequencies
+	for (int i = 0; i < input.size(); i++)
+	{
+		rates[comparison(input[i])]++;
+	}
+	//Make the frequencies cumulative
+	for (int i = 1; i < range; i++)
+	{
+		rates[i] += rates[i - 1];
+	}
+	//Build the sorted list
+	vector<int> clone(input);
+	for (int i = input.size() - 1; i >= 0; i--)
+	{
+		int ind = comparison(clone[i]);
+		input[rates[ind] - 1] = clone[i];
+		rates[ind]--;
+	}
+
+	return input;
+}
 vector<int> countingSort(vector<int> input)
 {
-	return input;
+	return countingSortInner(input, input.size() * 2, [](int n) { return n; });
+}
+int nthDigit(int number, int index)
+{
+	//Index goes from right to left
+	return number / (int)pow(10, index) % 10;
 }
 vector<int> radixSort(vector<int> input)
 {
+	for (int i = 0; i < (int)log10(input.size()) + 1; i++)
+	{
+		input = countingSortInner(input, 10, [i](int n) { return nthDigit(n, i); });
+	}
 	return input;
 }
 //
 
 int main()
 {
-	srand(NULL);
+	srand(time(NULL));
 	vector<int> arrays[5];
 	arrays[0] = randomArray(10);
 	arrays[1] = randomArray(100);
@@ -125,13 +240,13 @@ int main()
 	arrays[3] = randomArray(5000);
 	arrays[4] = randomArray(25000);
 
-	testSortingMethod("Bubble sort", bubbleSort, arrays);
+	//testSortingMethod("Bubble sort", bubbleSort, arrays);
 	//testSortingMethod("Insertion sort", insertionSort, arrays);
 	//testSortingMethod("Merge sort", mergeSort, arrays);
 	//testSortingMethod("Quicksort", quickSort, arrays);
 	//testSortingMethod("Heapsort", heapSort, arrays);
 	//testSortingMethod("Counting sort", countingSort, arrays);
-	//testSortingMethod("Radix sort", radixSort, arrays);
+	testSortingMethod("Radix sort", radixSort, arrays);
 
 	int a;
 	cin >> a;
