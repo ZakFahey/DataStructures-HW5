@@ -1,7 +1,8 @@
 ﻿  HW5.cpp
-c:\users\zak\documents\github\datastructures-hw5\hw5\hw5.cpp(74): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-c:\users\zak\documents\github\datastructures-hw5\hw5\hw5.cpp(205): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-c:\users\zak\documents\github\datastructures-hw5\hw5\hw5.cpp(216): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-c:\users\zak\documents\github\datastructures-hw5\hw5\hw5.cpp(235): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-  HW5.vcxproj -> C:\Users\Zak\Documents\GitHub\DataStructures-HW5\HW5\x64\Debug\HW5.exe
-  HW5.vcxproj -> C:\Users\Zak\Documents\GitHub\DataStructures-HW5\HW5\x64\Debug\HW5.pdb (Full PDB)
+c:\users\davucci\source\repos\datastructures-hw5\hw5\hw5.cpp(74): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+c:\users\davucci\source\repos\datastructures-hw5\hw5\hw5.cpp(215): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\users\davucci\source\repos\datastructures-hw5\hw5\hw5.cpp(245): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\davucci\source\repos\datastructures-hw5\hw5\hw5.cpp(257): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+c:\users\davucci\source\repos\datastructures-hw5\hw5\hw5.cpp(278): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  HW5.vcxproj -> C:\Users\DaVucci\Source\Repos\DataStructures-HW5\HW5\x64\Debug\HW5.exe
+  HW5.vcxproj -> C:\Users\DaVucci\Source\Repos\DataStructures-HW5\HW5\x64\Debug\HW5.pdb (Partial PDB)

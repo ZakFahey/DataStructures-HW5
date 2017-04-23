@@ -99,6 +99,7 @@ vector<int> bubbleSort(vector<int> input)
 	}
 	return input;
 }
+
 vector<int> insertionSort(vector<int> input)
 {
 	for (int i = 1; i < input.size(); i++)
@@ -120,6 +121,7 @@ vector<int> insertionSort(vector<int> input)
 	}
 	return input;
 }
+
 vector<int> mergeSort(vector<int> input)
 {
 	if(input.size() == 1) return input;
@@ -173,14 +175,52 @@ vector<int> mergeSort(vector<int> input)
 
 	return input;
 }
+
+void quickSortInner(vector<int>& input, int left, int right)
+{
+	// Assigning the left and right pointers
+	int i = left;
+	int j = right;
+
+	// Assigning random pivot value
+	int pivot = input[left + (rand() % (left - right))];
+	int temp;
+
+	// Partioning of the data
+	while (i <= j)
+	{
+		// Find values to swap
+		while (input[i] < pivot) { i++; }
+		while (input[j] > pivot) { j--; }
+
+		// Swap values
+		if (i <= j)
+		{
+			temp = input[i];
+			input[i] = input[j];
+			input[j] = temp;
+			i++;
+			j--;
+		}
+	}
+
+	if (left < j)
+		quickSortInner(input, left, j);
+	if (i < right)
+		quickSortInner(input, i, right);
+}
+
 vector<int> quickSort(vector<int> input)
 {
+	quickSortInner(input, 0, input.size()-1);
 	return input;
 }
+
 vector<int> heapSort(vector<int> input)
 {
 	return input;
 }
+
 vector<int> countingSortInner(vector<int> input, int range, function<int(int)> comparison)
 {
 	int *rates = new int[range];
@@ -211,15 +251,18 @@ vector<int> countingSortInner(vector<int> input, int range, function<int(int)> c
 
 	return input;
 }
+
 vector<int> countingSort(vector<int> input)
 {
 	return countingSortInner(input, input.size() * 2, [](int n) { return n; });
 }
+
 int nthDigit(int number, int index)
 {
 	//Index goes from right to left
 	return number / (int)pow(10, index) % 10;
 }
+
 vector<int> radixSort(vector<int> input)
 {
 	for (int i = 0; i < (int)log10(input.size()) + 1; i++)
@@ -243,12 +286,10 @@ int main()
 	//testSortingMethod("Bubble sort", bubbleSort, arrays);
 	//testSortingMethod("Insertion sort", insertionSort, arrays);
 	//testSortingMethod("Merge sort", mergeSort, arrays);
-	//testSortingMethod("Quicksort", quickSort, arrays);
+	testSortingMethod("Quicksort", quickSort, arrays);
 	//testSortingMethod("Heapsort", heapSort, arrays);
 	//testSortingMethod("Counting sort", countingSort, arrays);
-	testSortingMethod("Radix sort", radixSort, arrays);
+	//testSortingMethod("Radix sort", radixSort, arrays);
 
-	int a;
-	cin >> a;
 	return 0;
 }
