@@ -176,7 +176,7 @@ vector<int> mergeSort(vector<int> input)
 	return input;
 }
 
-void quickSortInner(vector<int>& input, int left, int right)
+void quickSortInner(vector<int> &input, int left, int right)
 {
 	// Assigning the left and right pointers
 	int i = left;
@@ -216,9 +216,130 @@ vector<int> quickSort(vector<int> input)
 	return input;
 }
 
+// Calulates where the child is
+// By default, returns left child, where right child=left+1
+// child=1 for left child, child=2 for left child
+// incase of no child, returns -1
+int toChild(vector<int> &input, int index, int child = 1)
+{
+	child = (index * 2) + child;
+	if (child >= input.size())
+		return -1;
+	return child;
+}
+
+// Calculates where the parent is
+// incase of no parent (root), returns -1
+int toParent(int index)
+{
+	if (index <= 0)
+		return -1;
+
+	// Right child is always even
+	// Left child is always odd
+	if (index % 2 == 0)
+		return (index - 2) / 2;
+	else
+		return (index - 1) / 2;
+}
+
+// Swaps with largest child if it is smaller than that child
+// Calls recursively
+void reheapDown(vector<int> &input, int index = 0)
+{
+	int leftChild = toChild(input, index);
+
+	if (leftChild == -1)
+		return;
+
+	if (leftChild + 1 == input.size() || input[leftChild] > input[leftChild + 1])
+	{
+		if (input[leftChild] > input[index])
+		{
+			int temp = input[index];
+			input[index] = input[leftChild];
+			input[leftChild] = temp;
+			reheapDown(input, leftChild);
+		}
+		else
+			return;
+	}
+	else
+	{
+		if (input[leftChild + 1] > input[index])
+		{
+			int temp = input[index];
+			input[index] = input[leftChild + 1];
+			input[leftChild + 1] = temp;
+			reheapDown(input, leftChild + 1);
+		}
+		else
+			return;
+	}
+}
+
+// Swaps with parent if it is larger
+void reheapUp(vector<int> &input, int index)
+{
+	int parent = toParent(index);
+	if (input[index] > input[index-1])
+	{
+		if (input[index] > input[parent])
+		{
+			int temp = input[index];
+			input[index] = input[parent];
+			input[parent] = temp;
+		}
+		if (toChild(input, index) != -1)
+			reheapDown(input, index);
+	}
+	else
+	{
+		if (input[index-1] > input[parent])
+		{
+			int temp = input[index-1];
+			input[index-1] = input[parent];
+			input[parent] = temp;
+		}
+		if (toChild(input, index-1) != -1)
+			reheapDown(input, index-1);
+	}
+}
+
+void heapify(vector<int> &input)
+{
+	int offset = 1;
+	if (input.size() % 2 == 0)
+	{
+		int index = input.size() - 1;
+		int parent = toParent(index);
+		if (input[index] > input[parent])
+		{
+			int temp = input[index];
+			input[index] = input[parent];
+			input[parent] = temp;
+		}
+		offset++;
+	}
+	for (int i = input.size()-offset; i > 0; i = i - 2)
+	{
+		reheapUp(input, i);
+	}
+}
+
 vector<int> heapSort(vector<int> input)
 {
-	return input;
+	heapify(input);
+	vector<int> array;
+	array.resize(input.size());
+	for (int i = input.size()-1; i >= 0; i--)
+	{
+		array[i] = input[0];
+		input[0] = input[i];
+		input.pop_back();
+		reheapDown(input);
+	}
+	return array;
 }
 
 vector<int> countingSortInner(vector<int> input, int range, function<int(int)> comparison)
@@ -276,6 +397,7 @@ vector<int> radixSort(vector<int> input)
 int main()
 {
 	srand(time(NULL));
+	
 	vector<int> arrays[5];
 	arrays[0] = randomArray(10);
 	arrays[1] = randomArray(100);
@@ -286,8 +408,8 @@ int main()
 	//testSortingMethod("Bubble sort", bubbleSort, arrays);
 	//testSortingMethod("Insertion sort", insertionSort, arrays);
 	//testSortingMethod("Merge sort", mergeSort, arrays);
-	testSortingMethod("Quicksort", quickSort, arrays);
-	//testSortingMethod("Heapsort", heapSort, arrays);
+	//testSortingMethod("Quicksort", quickSort, arrays);
+	testSortingMethod("Heapsort", heapSort, arrays);
 	//testSortingMethod("Counting sort", countingSort, arrays);
 	//testSortingMethod("Radix sort", radixSort, arrays);
 
